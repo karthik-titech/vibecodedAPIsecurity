@@ -142,8 +142,10 @@ build/
 dist/
 out/
 
-# Documentation build
-docs/
+# Documentation build (excluding markdown files)
+docs/*.html
+docs/*.pdf
+docs/build/
 
 # Security scanner output
 security-scan-results/
