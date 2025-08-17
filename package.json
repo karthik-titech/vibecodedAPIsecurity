@@ -1,0 +1,108 @@
+{
+  "name": "vibecoded-api-security",
+  "version": "1.0.0",
+  "description": "Comprehensive security framework for vibe-coded applications that prevents common vulnerabilities like hardcoded credentials, SQL injection, XSS, and more.",
+  "main": "src/security/SecurityManager.js",
+  "keywords": [
+    "security",
+    "vibe-coded",
+    "api-security",
+    "sql-injection",
+    "xss-protection",
+    "authentication",
+    "authorization",
+    "input-validation",
+    "secret-management",
+    "hardcoded-credentials",
+    "security-framework",
+    "express-middleware",
+    "jwt",
+    "bcrypt",
+    "content-security-policy",
+    "rate-limiting",
+    "vulnerability-scanning"
+  ],
+  "author": "VibeCoded Security Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vibecoded/security-framework.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vibecoded/security-framework/issues"
+  },
+  "homepage": "https://github.com/vibecoded/security-framework#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "start": "node examples/server.js",
+    "test": "jest",
+    "test:security": "node tests/security-scan.js",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "security-scan": "node src/security/scan.js",
+    "docs": "jsdoc src/ -d docs",
+    "example": "node examples/basic-usage.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "joi": "^17.11.0",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.11.3",
+    "mysql2": "^3.6.5",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "cors": "^2.8.5",
+    "compression": "^1.7.4",
+    "express-validator": "^7.0.1",
+    "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.56.0",
+    "jsdoc": "^4.0.2",
+    "nodemon": "^3.0.2",
+    "supertest": "^6.3.3",
+    "@types/node": "^20.10.5",
+    "prettier": "^3.1.1"
+  },
+  "peerDependencies": {
+    "express": ">=4.0.0"
+  },
+  "files": [
+    "src/",
+    "examples/",
+    "README.md",
+    "LICENSE"
+  ],
+  "directories": {
+    "lib": "src"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverageFrom": [
+      "src/**/*.js",
+      "!src/examples/**"
+    ]
+  },
+  "eslintConfig": {
+    "env": {
+      "node": true,
+      "es2021": true,
+      "jest": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 12,
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-console": "warn",
+      "no-unused-vars": "warn"
+    }
+  }
+}
