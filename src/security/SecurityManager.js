@@ -3,6 +3,9 @@ const SQLInjectionProtection = require('./database/SQLInjectionProtection');
 const XSSProtection = require('./xss/XSSProtection');
 const AuthManager = require('./auth/AuthManager');
 const InputValidator = require('./validation/InputValidator');
+const KeyExpirationManager = require('./key-management/KeyExpirationManager');
+const WorkflowHandleRotationManager = require('./workflow/WorkflowHandleRotationManager');
+const WorkflowOrchestrationManager = require('./workflow/WorkflowOrchestrationManager');
 
 /**
  * Main Security Manager for Vibe-Coded Applications
@@ -45,6 +48,24 @@ class SecurityManager {
 
       // Input Validation
       this.components.inputValidator = new InputValidator(this.config.validation || {});
+
+      // Key Expiration Management
+      if (this.config.keyManagement) {
+        this.components.keyManager = new KeyExpirationManager(this.config.keyManagement);
+        await this.components.keyManager.initialize();
+      }
+
+      // Workflow Handle Rotation Management
+      if (this.config.workflowManagement) {
+        this.components.handleManager = new WorkflowHandleRotationManager(this.config.workflowManagement);
+        await this.components.handleManager.initialize();
+      }
+
+      // Workflow Orchestration Management
+      if (this.config.workflowOrchestration) {
+        this.components.orchestrationManager = new WorkflowOrchestrationManager(this.config.workflowOrchestration);
+        await this.components.orchestrationManager.initialize();
+      }
 
       this.initialized = true;
       console.log('✅ Security Manager initialized successfully');
@@ -286,21 +307,101 @@ class SecurityManager {
    * @returns {Object} Security status
    */
   getSecurityStatus() {
+    const features = [
+      'Secret Management',
+      'SQL Injection Protection',
+      'XSS Protection',
+      'Authentication & Authorization',
+      'Input Validation',
+      'Rate Limiting',
+      'Security Headers'
+    ];
+
+    // Add workflow features if available
+    if (this.components.keyManager) {
+      features.push('Key Expiration Management');
+    }
+    if (this.components.handleManager) {
+      features.push('Workflow Handle Rotation');
+    }
+    if (this.components.orchestrationManager) {
+      features.push('Workflow Orchestration');
+    }
+
     return {
       initialized: this.initialized,
       components: Object.keys(this.components),
       timestamp: new Date().toISOString(),
       version: '1.0.0',
-      features: [
-        'Secret Management',
-        'SQL Injection Protection',
-        'XSS Protection',
-        'Authentication & Authorization',
-        'Input Validation',
-        'Rate Limiting',
-        'Security Headers'
-      ]
+      features: features
     };
+  }
+
+  /**
+   * Get workflow orchestration manager
+   * @returns {WorkflowOrchestrationManager} Orchestration manager instance
+   */
+  getWorkflowOrchestrationManager() {
+    if (!this.components.orchestrationManager) {
+      throw new Error('Workflow orchestration manager not initialized. Add workflowOrchestration configuration.');
+    }
+    return this.components.orchestrationManager;
+  }
+
+  /**
+   * Get key expiration manager
+   * @returns {KeyExpirationManager} Key manager instance
+   */
+  getKeyExpirationManager() {
+    if (!this.components.keyManager) {
+      throw new Error('Key expiration manager not initialized. Add keyManagement configuration.');
+    }
+    return this.components.keyManager;
+  }
+
+  /**
+   * Get workflow handle rotation manager
+   * @returns {WorkflowHandleRotationManager} Handle manager instance
+   */
+  getWorkflowHandleRotationManager() {
+    if (!this.components.handleManager) {
+      throw new Error('Workflow handle rotation manager not initialized. Add workflowManagement configuration.');
+    }
+    return this.components.handleManager;
+  }
+
+  /**
+   * Register a workflow with orchestration
+   * @param {string} workflowId - Unique workflow identifier
+   * @param {string} workflowType - Type of workflow
+   * @param {Function} workflowFunction - Workflow function
+   * @param {Object} config - Workflow configuration
+   * @returns {Object} Workflow information
+   */
+  async registerWorkflow(workflowId, workflowType, workflowFunction, config = {}) {
+    const orchestrationManager = this.getWorkflowOrchestrationManager();
+    return await orchestrationManager.registerWorkflow(workflowId, workflowType, workflowFunction, config);
+  }
+
+  /**
+   * Execute a workflow
+   * @param {string} workflowId - Workflow identifier
+   * @param {Object} data - Input data
+   * @param {Object} options - Execution options
+   * @returns {Object} Workflow result
+   */
+  async executeWorkflow(workflowId, data = {}, options = {}) {
+    const orchestrationManager = this.getWorkflowOrchestrationManager();
+    return await orchestrationManager.executeWorkflow(workflowId, data, options);
+  }
+
+  /**
+   * Get workflow orchestration statistics
+   * @returns {Object} Orchestration statistics
+   */
+  getWorkflowOrchestrationStats() {
+    const orchestrationManager = this.getWorkflowOrchestrationManager();
+    return orchestrationManager.getOrchestrationStats();
   }
 
   /**
